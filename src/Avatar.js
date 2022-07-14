@@ -1,7 +1,19 @@
-function Avatar({image, width}){
+function Avatar({image, attributes}){
+
+    const attributesName = Object.keys(attributes);
+
+    const imageJsx = 
+    <img 
+    src={image} 
+    width={attributes.width} 
+    height={attributes.height}
+    alt={attributes.alt}
+    style={attributes.style}
+    title={attributes.title}
+    />
 
     return (
-        <img src={image} width={width} />
+        imageJsx
     );
 }
 

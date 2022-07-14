@@ -1,5 +1,6 @@
 import React from 'react';
 import Avatar from './Avatar';
+import Posts from './Posts';
 
 class Member extends React.Component{
     constructor(props){
@@ -9,16 +10,15 @@ class Member extends React.Component{
 
     render(){
 
-        const {name, email, age, users, comments} = this.props;
+        const {name, email, age, users, comments, avatar, posts} = this.props;
+
+        const {image, attributes} = avatar;
 
         return (
             <>
                 <h1>Tech2</h1>
                 <p>
-                    <Avatar 
-                    image="https://picsum.photos/200"
-                    width="100"
-                    />
+                    <Avatar image={image} attributes={attributes} />
                 </p>
                 <h2>Name: {name}</h2>
                 <h2>Age: {age}</h2>
@@ -28,6 +28,10 @@ class Member extends React.Component{
                 {users}
                 <h2>Comments</h2>
                 {comments}
+
+                <h2>Bài viết đã đăng</h2>
+                <button type='button'>Xoá bài đăng</button>
+                <Posts {...this.props} />
             </>
         );
     }

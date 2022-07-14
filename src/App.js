@@ -4,6 +4,10 @@ import Member from './Member';
 import Comment from './Comment';
 import User from './User';
 import React from 'react';
+import MemberInfo from './MemberInfo';
+import Counter from './Counter';
+import Users from './Users';
+import Form from './Form';
 
 const check = false;
 
@@ -134,6 +138,49 @@ const renderUsers = users.map((user)=>{
   )
 })
 
+const member = {
+  name: 'Hoàng An',
+  age: 30,
+  email: 'hoangan.web@gmail.com',
+  comments: {
+    title: 'Tiêu đề 1',
+    content: 'Nội dung 1'
+  },
+  avatar: {
+    image: 'https://picsum.photos/200',
+    attributes: {
+      width: '100',
+      height: '50',
+      alt: 'Hình ảnh của Hoàng An',
+      title: "Vui lòng follow tôi",
+      style: {
+        boxShadow: '3px 3px 3px 5px #ccc',
+        borderRadius: '20px'
+      }
+    }
+  },
+
+  posts: [
+      {
+        id: 1,
+        title: 'Bài viết 01',
+        content: 'Nội dung 01'
+      },
+
+      {
+        id: 2,
+        title: 'Bài viết 02',
+        content: 'Nội dung 02'
+      },
+
+      {
+        id: 3,
+        title: 'Bài viết 02',
+        content: 'Nội dung 03'
+      }
+  ]
+}
+
 function App() {
   return (
     <>
@@ -151,21 +198,26 @@ function App() {
         })
       } */}
 
-      <Member 
-      name="Hoàng An" 
-      age="30" 
-      email="hoangan.web@gmail.com" 
+      {/* <Member 
+      name={member.name} 
+      age={member.age} 
+      email={member.email}
       users={renderUsers}
       comments = {
       <Comment 
-      title="Title 01" 
-      content = "Content 01"
+      title={member.comments.title}
+      content = {member.comments.content}
       />}
-      />
+      avatar = {member.avatar}
+      posts = {member.posts}
+      /> */}
       {/* {
         renderUsers
       } */}
-
+      {/* <MemberInfo name={member.name} email={member.email}/> */}
+      {/* <Counter /> */}
+      {/* <Users /> */}
+      <Form />
     </>
   );
 }
