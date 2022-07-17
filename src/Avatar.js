@@ -1,3 +1,4 @@
+import React from "react";
 function Avatar({image, attributes}){
 
     const attributesName = Object.keys(attributes);

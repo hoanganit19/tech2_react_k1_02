@@ -1,6 +1,7 @@
+import React from "react";
 import Avatar from "./Avatar";
 function Posts({posts, name, avatar}){
-
+    
     const postsJsx = posts.map(post => {
         return (
             <div key={post.id} style={{borderBottom: '1px solid #ccc'}}>
