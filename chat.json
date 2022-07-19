@@ -1,0 +1,68 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "messages": [
+    {
+      "username": "hoangan.web",
+      "message": "Xin chào",
+      "id": 1
+    },
+    {
+      "username": "hoangan.web",
+      "message": "tin nhắn 1",
+      "id": 2
+    },
+    {
+      "username": "hoangan.web",
+      "message": "Tin nhắn 2",
+      "id": 3
+    },
+    {
+      "username": "huy",
+      "message": "hello",
+      "id": 4
+    },
+    {
+      "username": "hoangan.web",
+      "message": "123",
+      "id": 5
+    },
+    {
+      "username": "huy",
+      "message": "456",
+      "id": 6
+    },
+    {
+      "username": "huy",
+      "message": "test 123",
+      "id": 7
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "hoangan.web@gmail.com",
+      "password": "123456"
+    },
+    {
+      "id": "2",
+      "email": "hoanganit19@gmail.com",
+      "password": "123456"
+    }
+  ]
+}

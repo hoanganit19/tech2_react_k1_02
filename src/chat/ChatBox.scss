@@ -1,0 +1,25 @@
+.message{
+    height: 300px;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+
+    .message__item{
+        
+        margin-bottom: 20px;
+
+        .message__item--content{
+            background: rgb(3, 182, 248); 
+            border-radius: 25px;
+            padding: 10px 30px;
+        }
+
+        p{
+            margin-bottom: 0;
+            padding-left: 30px;
+            font-style: italic;
+            color: #666;
+        }
+    }
+}
