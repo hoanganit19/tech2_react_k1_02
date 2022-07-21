@@ -13,6 +13,10 @@ export default class ChatBox extends React.Component {
         message: "",
       },
     };
+
+    // this.tenHam = () => {
+
+    // }
   }
 
   changeValue = (e) => {
@@ -33,11 +37,13 @@ export default class ChatBox extends React.Component {
     });
   }
 
+  //Chạy lần 1
   componentDidMount = () => {
     //call api
     this.getMessage();
   };
 
+  //Chạy lần 2 trở đi
   componentDidUpdate = () => {
     //call api
     this.getMessage();

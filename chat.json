@@ -51,17 +51,29 @@
       "username": "huy",
       "message": "test 123",
       "id": 7
+    },
+    {
+      "username": "hoangan.web",
+      "message": "Chào Hưng",
+      "id": 8
+    },
+    {
+      "username": "manhhung",
+      "message": "Em chào anh An",
+      "id": 9
     }
   ],
   "users": [
     {
       "id": "1",
       "email": "hoangan.web@gmail.com",
+      "username": "hoangan.web",
       "password": "123456"
     },
     {
       "id": "2",
       "email": "hoanganit19@gmail.com",
+      "username": "hoanganit19",
       "password": "123456"
     }
   ]
