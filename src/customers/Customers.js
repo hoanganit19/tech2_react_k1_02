@@ -25,60 +25,65 @@ export default class Customers extends React.Component {
       paginate: {
         maxPage: 0,
         currentPage: 1,
-
       },
       filters: {
-        status: 'all',
-        keywords: ''
-      }
+        status: "all",
+        keywords: "",
+      },
+      deleteRef: []
     };
 
     this.customersApi = "http://localhost:3004/customers";
 
     this.perPage = 3;
+    
+    this.deleteButtonRef = React.createRef();
+
+    this.deleteCountRef = React.createRef();
+
+    this.checkAllRef = React.createRef();
   }
 
   getFilterQuery = () => {
     const queryArr = [];
-    let queryString = '';
+    let queryString = "";
 
-    Object.keys(this.state.filters).forEach(fieldName => {
-        if (fieldName==='status'){
-          
-          if (this.state.filters.status=='active' || this.state.filters.status=='inactive'){
-              let status = 0;
-              
-              if (this.state.filters.status=='active'){
-                  status = 1;
-              }
+    Object.keys(this.state.filters).forEach((fieldName) => {
+      if (fieldName === "status") {
+        if (
+          this.state.filters.status == "active" ||
+          this.state.filters.status == "inactive"
+        ) {
+          let status = 0;
 
-              queryArr.push(`status=${status}`);
+          if (this.state.filters.status == "active") {
+            status = 1;
           }
-          
-        }else if (this.state.filters.keywords){
-  
-          queryArr.push(`q=${this.state.filters.keywords}`);
+
+          queryArr.push(`status=${status}`);
         }
+      } else if (this.state.filters.keywords) {
+        queryArr.push(`q=${this.state.filters.keywords}`);
+      }
     });
-    
-    if (queryArr.length){
-      queryString = queryArr.join('&');
+
+    if (queryArr.length) {
+      queryString = queryArr.join("&");
     }
 
-    return queryString
-  }
+    return queryString;
+  };
 
   setMaxPage = () => {
-    
     const queryString = this.getFilterQuery();
 
     let customerApi = this.customersApi;
-    if (customerApi.indexOf('?')===-1){
-      customerApi+='?'+queryString;
-    }else{
-      customerApi+='&'+queryString;
+    if (customerApi.indexOf("?") === -1) {
+      customerApi += "?" + queryString;
+    } else {
+      customerApi += "&" + queryString;
     }
-    
+
     fetch(customerApi)
       .then((response) => response.json())
       .then((customers) => {
@@ -95,8 +100,7 @@ export default class Customers extends React.Component {
   };
 
   getUsers = () => {
-
-    const queryString = '&'+this.getFilterQuery();
+    const queryString = "&" + this.getFilterQuery();
 
     fetch(
       this.customersApi +
@@ -104,6 +108,21 @@ export default class Customers extends React.Component {
     )
       .then((response) => response.json())
       .then((customers) => {
+        customers.forEach(customer => {
+            //Create Ref
+            const deleteRef = [];
+        
+            this.state.customers.forEach(customer => {
+              
+              deleteRef.push(React.createRef());
+              this.setState({
+                deleteRef: deleteRef
+              });
+          });
+
+        
+          
+        });
         this.setState({
           customers: customers,
           isLoading: false,
@@ -115,6 +134,8 @@ export default class Customers extends React.Component {
     fetch(this.customersApi + "/" + userId)
       .then((response) => response.json())
       .then((customer) => {
+
+
         this.setState({
           form: customer,
         });
@@ -130,6 +151,7 @@ export default class Customers extends React.Component {
   componentDidMount() {
     this.getUsers();
     this.setMaxPage();
+
   }
 
   componentDidUpdate() {
@@ -199,8 +221,10 @@ export default class Customers extends React.Component {
     paginate.currentPage = page;
     this.setState({
       paginate: paginate,
-      isLoading: true
+      isLoading: true,
     });
+
+    this.checkAllRef.current.checked = false;
   };
 
   prevPaginate = (e) => {
@@ -238,11 +262,22 @@ export default class Customers extends React.Component {
         </tr>
       );
     }
-
-    return this.state.customers.map((customer) => {
+    
+    return this.state.customers.map((customer, index) => {
+  
       return (
         <tr key={customer.id}>
-          <td><input type="checkbox" className="delete" value={customer.id}/></td>
+          <td>
+            <input
+              type="checkbox"
+              className="delete"
+              value={customer.id}
+              key={this.state.checkAll}
+              defaultChecked={this.state.checkAll}
+              onChange={this.handleChangeDelete}
+              ref={this.state.deleteRef[index]}
+            />
+          </td>
           <td>{customer.name}</td>
           <td>{customer.email}</td>
           <td>{customer.phone}</td>
@@ -475,7 +510,11 @@ export default class Customers extends React.Component {
             <form onSubmit={this.handleFilters}>
               <div className="row">
                 <div className="col-3">
-                  <select name="status" className="form-control" onChange={this.changeValueFilter}>
+                  <select
+                    name="status"
+                    className="form-control"
+                    onChange={this.changeValueFilter}
+                  >
                     <option value={"all"}>Tất cả trạng thái</option>
                     <option value={"active"}>Kích hoạt</option>
                     <option value={"inactive"}>Chưa kích hoạt</option>
@@ -501,8 +540,14 @@ export default class Customers extends React.Component {
             <table className="table table-bordered">
               <thead>
                 <tr>
-                
-                  <th width="5%"><input type="checkbox" className="checkAll"/></th>
+                  <th width="5%">
+                    <input
+                      type="checkbox"
+                      className="checkAll"
+                      onChange={this.checkAll}
+                      ref = {this.checkAllRef}
+                    />
+                  </th>
                   <th>Tên</th>
                   <th>Email</th>
                   <th>Điện thoại</th>
@@ -513,7 +558,9 @@ export default class Customers extends React.Component {
               </thead>
               <tbody>{this.customersRender()}</tbody>
             </table>
-            <button type="button" className="btn btn-danger disabled">Xoá đã chọn (0)</button>
+            <button type="button" ref={this.deleteButtonRef} className="btn btn-danger disabled">
+              Xoá đã chọn (<span ref={this.deleteCountRef}>0</span>)
+            </button>
             {this.paginateRender()}
           </>
         );
@@ -658,7 +705,7 @@ export default class Customers extends React.Component {
   handleFilters = (e) => {
     e.preventDefault();
     //console.log(this.state.filters);
-  }
+  };
 
   changeValueFilter = (e) => {
     e.preventDefault();
@@ -672,8 +719,10 @@ export default class Customers extends React.Component {
 
     setTimeout(() => {
       this.setMaxPage();
+      this.resetCheckboxDelete();
     }, 0);
-  }
+    
+  };
 
   changeValue = (e) => {
     e.preventDefault();
@@ -685,6 +734,51 @@ export default class Customers extends React.Component {
       form: data,
     });
   };
+
+  checkAll = (e) => { 
+      const checked = this.checkAllRef.current.checked;
+
+      this.state.deleteRef.forEach(checkbox => {
+          checkbox.current.checked = checked;
+      });
+
+      this.handleChangeDelete();
+  };
+
+  handleChangeDelete = (e) => {
+    //console.log(e.target.checked);
+    
+    let countChecked = 0;
+
+    this.state.deleteRef.forEach(checkbox => {
+        if (checkbox.current.checked){
+          countChecked++;
+        }
+    });
+
+    this.deleteCountRef.current.innerText = countChecked;
+
+    if (countChecked>0){
+        this.deleteButtonRef.current.classList.remove('disabled');
+    }else{
+        this.deleteButtonRef.current.classList.add('disabled');
+    }
+
+    //Xử lý tự động check all
+    if (countChecked==this.state.customers.length){
+      this.checkAllRef.current.checked = true;
+    }else{
+      this.checkAllRef.current.checked = false;
+    }
+  }
+
+  resetCheckboxDelete = () => {
+    this.checkAllRef.current.checked = false;
+    this.state.deleteRef.forEach(checkbox => {
+        checkbox.current.checked = false;
+    });
+    this.handleChangeDelete();
+  }
 
   render() {
     return (
