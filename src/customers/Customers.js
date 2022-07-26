@@ -1,8 +1,8 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from "react-confirm-alert"; // Import
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 
 import "./Customers.scss";
 
@@ -20,11 +20,15 @@ export default class Customers extends React.Component {
       },
       errors: {},
       msg: "",
-      msgType: 'danger',
+      msgType: "danger",
       isLoading: true,
       paginate: {
         maxPage: 0,
-        currentPage: 1
+        currentPage: 1,
+      },
+      filters: {
+        status: 'all',
+        keywords: ''
       }
     };
 
@@ -33,143 +37,203 @@ export default class Customers extends React.Component {
     this.perPage = 3;
   }
 
+  getFilterQuery = () => {
+    const queryArr = [];
+    let queryString = '';
+
+    Object.keys(this.state.filters).forEach(fieldName => {
+        if (fieldName==='status'){
+          
+          if (this.state.filters.status=='active' || this.state.filters.status=='inactive'){
+              let status = 0;
+              
+              if (this.state.filters.status=='active'){
+                  status = 1;
+              }
+
+              queryArr.push(`status=${status}`);
+          }
+          
+        }else if (this.state.filters.keywords){
+  
+          queryArr.push(`q=${this.state.filters.keywords}`);
+        }
+    });
+    
+    if (queryArr.length){
+      queryString = queryArr.join('&');
+    }
+
+    return queryString
+  }
+
   setMaxPage = () => {
-    fetch(this.customersApi)
+    
+    const queryString = this.getFilterQuery();
+
+    let customerApi = this.customersApi;
+    if (customerApi.indexOf('?')===-1){
+      customerApi+='?'+queryString;
+    }else{
+      customerApi+='&'+queryString;
+    }
+    
+    fetch(customerApi)
       .then((response) => response.json())
       .then((customers) => {
         const maxPage = Math.ceil(customers.length / this.perPage);
-        
-        const paginate = {...this.state.paginate}
+
+        const paginate = { ...this.state.paginate };
 
         paginate.maxPage = maxPage;
 
         this.setState({
-          paginate: paginate
+          paginate: paginate,
         });
       });
-  }
+  };
 
   getUsers = () => {
-   
-    fetch(this.customersApi+`?_page=${this.state.paginate.currentPage}&_limit=${this.perPage}`)
+
+    const queryString = '&'+this.getFilterQuery();
+
+    fetch(
+      this.customersApi +
+        `?_page=${this.state.paginate.currentPage}&_limit=${this.perPage}${queryString}`
+    )
       .then((response) => response.json())
       .then((customers) => {
-        
         this.setState({
           customers: customers,
-          isLoading: false
+          isLoading: false,
         });
       });
   };
 
   getUser = (userId) => {
-    fetch(this.customersApi+'/'+userId)
+    fetch(this.customersApi + "/" + userId)
       .then((response) => response.json())
       .then((customer) => {
         this.setState({
-            form: customer
+          form: customer,
         });
       });
-  }
+  };
 
   deleteUser = (userId) => {
-    fetch(this.customersApi+'/'+userId, {
-      method: 'DELETE'
+    fetch(this.customersApi + "/" + userId, {
+      method: "DELETE",
     });
-  }
+  };
 
   componentDidMount() {
     this.getUsers();
     this.setMaxPage();
   }
 
-  componentDidUpdate(){
-    this.getUsers();
+  componentDidUpdate() {
+    setTimeout(() => {
+      this.getUsers();
+      this.setMaxPage();
+    }, 500);
   }
 
- paginateRender = () => {
-
+  paginateRender = () => {
     let paginateItem = [];
     let active;
     const currentPage = this.state.paginate.currentPage;
-    
-    for (let page = 1; page <=this.state.paginate.maxPage; page++){
-     
-      active = parseInt(page) === parseInt(currentPage) ? 'active':''
+
+    for (let page = 1; page <= this.state.paginate.maxPage; page++) {
+      active = parseInt(page) === parseInt(currentPage) ? "active" : "";
       paginateItem.push(
-        <li key={page} className={`page-item ${active}`} onClick={(e)=>{
-          e.preventDefault();
-          this.goPaginate(page)
-        }}><a className="page-link" href="#">{page}</a></li>
+        <li
+          key={page}
+          className={`page-item ${active}`}
+          onClick={(e) => {
+            e.preventDefault();
+            this.goPaginate(page);
+          }}
+        >
+          <a className="page-link" href="#">
+            {page}
+          </a>
+        </li>
       );
     }
 
     return (
-      <nav aria-label="Page navigation example" className="d-flex justify-content-end">
+      <nav
+        aria-label="Page navigation example"
+        className="d-flex justify-content-end"
+      >
         <ul className="pagination">
-          {
-            this.state.paginate.currentPage>1
-            ?
-            <li className="page-item"><a className="page-link" href="#" onClick={this.prevPaginate}>Trước</a></li>
-            :
+          {this.state.paginate.currentPage > 1 ? (
+            <li className="page-item">
+              <a className="page-link" href="#" onClick={this.prevPaginate}>
+                Trước
+              </a>
+            </li>
+          ) : (
             false
-          }
-         
+          )}
+
           {paginateItem}
-          {
-            this.state.paginate.currentPage<this.state.paginate.maxPage
-            ?
-            <li className="page-item"><a className="page-link" href="#" onClick={this.nextPaginate}>Sau</a></li>
-            :
+          {this.state.paginate.currentPage < this.state.paginate.maxPage ? (
+            <li className="page-item">
+              <a className="page-link" href="#" onClick={this.nextPaginate}>
+                Sau
+              </a>
+            </li>
+          ) : (
             false
-          }
+          )}
         </ul>
       </nav>
     );
- } 
+  };
 
-
- goPaginate = (page) => {
-    
-    const paginate = {...this.state.paginate};
+  goPaginate = (page) => {
+    const paginate = { ...this.state.paginate };
 
     paginate.currentPage = page;
     this.setState({
       paginate: paginate,
       //isLoading: true
-    })
- }  
+    });
+  };
 
- prevPaginate = (e) => {
+  prevPaginate = (e) => {
     e.preventDefault();
-    let page = this.state.paginate.currentPage
+    let page = this.state.paginate.currentPage;
     page = page - 1;
-    if (page < 0){
+    if (page < 0) {
       page = 1;
     }
 
     this.goPaginate(page);
- }
+  };
 
- nextPaginate = (e) => {
-  e.preventDefault();
-  let page = this.state.paginate.currentPage
-  page = page + 1;
-  if (page > this.state.paginate.maxPage){
-    page = this.state.paginate.maxPage;
-  }
+  nextPaginate = (e) => {
+    e.preventDefault();
+    let page = this.state.paginate.currentPage;
+    page = page + 1;
+    if (page > this.state.paginate.maxPage) {
+      page = this.state.paginate.maxPage;
+    }
 
-  this.goPaginate(page);
-}
+    this.goPaginate(page);
+  };
 
   customersRender = () => {
     let count = 0;
-    if (this.state.isLoading){
+    if (this.state.isLoading) {
       return (
         <tr>
-            <td colSpan={6}>
-              <div className="alert alert-success text-center">Đang tải dữ liệu...</div>
-            </td>
+          <td colSpan={6}>
+            <div className="alert alert-success text-center">
+              Đang tải dữ liệu...
+            </div>
+          </td>
         </tr>
       );
     }
@@ -177,10 +241,17 @@ export default class Customers extends React.Component {
     return this.state.customers.map((customer) => {
       return (
         <tr key={customer.id}>
-          <td>{++count}</td>
+          <td><input type="checkbox" class="delete" value={customer.id}/></td>
           <td>{customer.name}</td>
           <td>{customer.email}</td>
           <td>{customer.phone}</td>
+          <td>
+            {customer.status ? (
+              <button className="btn btn-success btn-sm">Kích hoạt</button>
+            ) : (
+              <button className="btn btn-danger btn-sm">Chưa kích hoạt</button>
+            )}
+          </td>
           <td>
             <a
               href="#"
@@ -188,20 +259,23 @@ export default class Customers extends React.Component {
               onClick={(e) => {
                 e.preventDefault();
                 this.handleAction("update", e.target.dataset.id);
-                
               }}
-              data-id={customer.id} 
+              data-id={customer.id}
             >
               Sửa
             </a>
           </td>
           <td>
-            <a href="#" data-id={customer.id} onClick={(e) => {
-              e.preventDefault();
-            
-              this.handleDeleteSubmit(e.target.dataset.id);
+            <a
+              href="#"
+              data-id={customer.id}
+              onClick={(e) => {
+                e.preventDefault();
 
-            }}  className="btn btn-danger btn-sm">
+                this.handleDeleteSubmit(e.target.dataset.id);
+              }}
+              className="btn btn-danger btn-sm"
+            >
               Xoá
             </a>
           </td>
@@ -382,12 +456,11 @@ export default class Customers extends React.Component {
 
         break;
 
-
-
       default:
         jsx = (
           <>
             <h1>Danh sách khách hàng</h1>
+
             <button
               type="button"
               className="btn btn-primary"
@@ -398,19 +471,48 @@ export default class Customers extends React.Component {
               Thêm mới
             </button>
             <hr />
+            <form onSubmit={this.handleFilters}>
+              <div className="row">
+                <div className="col-3">
+                  <select name="status" className="form-control" onChange={this.changeValueFilter}>
+                    <option value={"all"}>Tất cả trạng thái</option>
+                    <option value={"active"}>Kích hoạt</option>
+                    <option value={"inactive"}>Chưa kích hoạt</option>
+                  </select>
+                </div>
+                <div className="col-7">
+                  <input
+                    type="search"
+                    name="keywords"
+                    className="form-control"
+                    placeholder="Từ khoá tìm kiếm..."
+                    onChange={this.changeValueFilter}
+                  />
+                </div>
+                <div className="col-2">
+                  <button type="submit" className="btn btn-primary">
+                    Tìm kiếm
+                  </button>
+                </div>
+              </div>
+            </form>
+            <hr />
             <table className="table table-bordered">
               <thead>
                 <tr>
-                  <th width="5%">STT</th>
+                
+                  <th width="5%"><input type="checkbox" class="checkAll"/></th>
                   <th>Tên</th>
                   <th>Email</th>
                   <th>Điện thoại</th>
+                  <th>Trạng thái</th>
                   <th width="5%">Sửa</th>
                   <th width="5%">Xoá</th>
                 </tr>
               </thead>
               <tbody>{this.customersRender()}</tbody>
             </table>
+            <button type="button" className="btn btn-danger disabled">Xoá đã chọn (0)</button>
             {this.paginateRender()}
           </>
         );
@@ -420,14 +522,13 @@ export default class Customers extends React.Component {
     return jsx;
   };
 
-  handleAction = (action, id=0) => {
-    
-    if (id !==0){
+  handleAction = (action, id = 0) => {
+    if (id !== 0) {
       this.getUser(id);
     }
 
     this.setState({
-      action: action
+      action: action,
     });
   };
 
@@ -454,27 +555,27 @@ export default class Customers extends React.Component {
 
     if (Object.keys(errors).length) {
       msg = "Vui lòng kiểm tra các lỗi bên dưới";
-    }else{
-        //post api
-        fetch(this.customersApi, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state.form)
-        })
-        .then(response => response.json())
-        .then(customer => {
-            if (typeof customer==='object'){
-                this.setState({
-                    form: {
-                        name: '',
-                        email: '',
-                        phone: ''
-                    }
-                })
-                this.handleAction('lists');
-            }
+    } else {
+      //post api
+      fetch(this.customersApi, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(this.state.form),
+      })
+        .then((response) => response.json())
+        .then((customer) => {
+          if (typeof customer === "object") {
+            this.setState({
+              form: {
+                name: "",
+                email: "",
+                phone: "",
+              },
+            });
+            this.handleAction("lists");
+          }
         });
     }
 
@@ -485,7 +586,6 @@ export default class Customers extends React.Component {
   };
 
   handleUpdateSubmit = (e) => {
-
     e.preventDefault();
 
     const errors = {};
@@ -508,24 +608,24 @@ export default class Customers extends React.Component {
 
     if (Object.keys(errors).length) {
       msg = "Vui lòng kiểm tra các lỗi bên dưới";
-    }else{
-        //post api
-        fetch(this.customersApi+'/'+this.state.form.id, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state.form)
-        })
-        .then(response => response.json())
-        .then(customer => {
-            if (typeof customer==='object'){
-               // this.handleAction('lists');
-               this.setState({
-                msg: 'Cập nhật thành công',
-                msgType: 'success'
-               })
-            }
+    } else {
+      //post api
+      fetch(this.customersApi + "/" + this.state.form.id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(this.state.form),
+      })
+        .then((response) => response.json())
+        .then((customer) => {
+          if (typeof customer === "object") {
+            // this.handleAction('lists');
+            this.setState({
+              msg: "Cập nhật thành công",
+              msgType: "success",
+            });
+          }
         });
     }
 
@@ -533,30 +633,41 @@ export default class Customers extends React.Component {
       errors: errors,
       msg: msg,
     });
-
-  }
+  };
 
   handleDeleteSubmit = (id) => {
-
     confirmAlert({
-      title: 'Bạn có chắc chắn muốn xoá?',
-      message: 'Nếu xoá bạn sẽ không thể khôi phục',
+      title: "Bạn có chắc chắn muốn xoá?",
+      message: "Nếu xoá bạn sẽ không thể khôi phục",
       buttons: [
         {
-          label: 'Có',
+          label: "Có",
           onClick: () => {
             this.deleteUser(id);
-          }
+          },
         },
         {
-          label: 'Không',
-          onClick: () => {
-
-          }
-        }
-      ]
+          label: "Không",
+          onClick: () => {},
+        },
+      ],
     });
+  };
 
+  handleFilters = (e) => {
+    e.preventDefault();
+    //console.log(this.state.filters);
+  }
+
+  changeValueFilter = (e) => {
+    e.preventDefault();
+    const data = { ...this.state.filters };
+
+    data[e.target.name] = e.target.value;
+
+    this.setState({
+      filters: data,
+    });
   }
 
   changeValue = (e) => {

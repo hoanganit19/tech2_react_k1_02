@@ -4,43 +4,57 @@
       "id": 3,
       "name": "Nguyễn Văn C",
       "email": "nguyenvanc@gmail.com",
-      "phone": "0123456789"
+      "phone": "0123456789",
+      "status": 1
     },
     {
       "id": 5,
       "name": "Nguyễn Văn D",
       "email": "nguyenvand@gmail.com",
-      "phone": "0123456789"
+      "phone": "0123456789",
+      "status": 0
     },
     {
       "name": "Hoàng an",
       "email": "hoangan.web@gmail.com",
       "phone": "0388875179",
-      "id": 6
+      "id": 6,
+      "status": 1
     },
     {
       "name": "Tạ Hoàng An",
       "email": "hoangan.web@gmail.com",
       "phone": "0388875179",
-      "id": 7
+      "id": 7,
+      "status": 0
     },
     {
       "name": "Mạnh Tuấn",
       "email": "manhtuan@gmail.com",
       "phone": "0388875179",
-      "id": 8
+      "id": 8,
+      "status": 1
     },
     {
       "name": "Văn Tuấn",
       "email": "vantuan@gmail.com",
       "phone": "0388875179",
-      "id": 9
+      "id": 9,
+      "status": 1
     },
     {
       "id": 10,
       "name": "Nguyễn Chí Ngọc",
       "email": "nguyenchingoc@gmail.com",
-      "phone": "0388875179"
+      "phone": "0388875179",
+      "status": 0
+    },
+    {
+      "id": 11,
+      "name": "Phạm Văn Tuấn",
+      "email": "phamvantuan@gmail.com",
+      "phone": "0388875179",
+      "status": 0
     }
   ]
 }
