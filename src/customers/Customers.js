@@ -25,6 +25,7 @@ export default class Customers extends React.Component {
       paginate: {
         maxPage: 0,
         currentPage: 1,
+
       },
       filters: {
         status: 'all',
@@ -134,7 +135,7 @@ export default class Customers extends React.Component {
   componentDidUpdate() {
     setTimeout(() => {
       this.getUsers();
-      this.setMaxPage();
+      
     }, 500);
   }
 
@@ -198,7 +199,7 @@ export default class Customers extends React.Component {
     paginate.currentPage = page;
     this.setState({
       paginate: paginate,
-      //isLoading: true
+      isLoading: true
     });
   };
 
@@ -241,7 +242,7 @@ export default class Customers extends React.Component {
     return this.state.customers.map((customer) => {
       return (
         <tr key={customer.id}>
-          <td><input type="checkbox" class="delete" value={customer.id}/></td>
+          <td><input type="checkbox" className="delete" value={customer.id}/></td>
           <td>{customer.name}</td>
           <td>{customer.email}</td>
           <td>{customer.phone}</td>
@@ -501,7 +502,7 @@ export default class Customers extends React.Component {
               <thead>
                 <tr>
                 
-                  <th width="5%"><input type="checkbox" class="checkAll"/></th>
+                  <th width="5%"><input type="checkbox" className="checkAll"/></th>
                   <th>Tên</th>
                   <th>Email</th>
                   <th>Điện thoại</th>
@@ -668,6 +669,10 @@ export default class Customers extends React.Component {
     this.setState({
       filters: data,
     });
+
+    setTimeout(() => {
+      this.setMaxPage();
+    }, 0);
   }
 
   changeValue = (e) => {
