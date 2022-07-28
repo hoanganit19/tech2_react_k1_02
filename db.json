@@ -1,13 +1,6 @@
 {
   "customers": [
     {
-      "id": 3,
-      "name": "Nguyễn Văn C",
-      "email": "nguyenvanc@gmail.com",
-      "phone": "0123456789",
-      "status": 1
-    },
-    {
       "id": 5,
       "name": "Nguyễn Văn D",
       "email": "nguyenvand@gmail.com",
@@ -55,6 +48,12 @@
       "email": "phamvantuan@gmail.com",
       "phone": "0388875179",
       "status": 0
+    },
+    {
+      "id": 12,
+      "name": "Nguyễn Văn hoà",
+      "email": "nguyenvanhoa@gmail.com",
+      "phone": "03888523"
     }
   ]
 }
