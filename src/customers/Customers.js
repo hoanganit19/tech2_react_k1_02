@@ -751,7 +751,7 @@ export default class Customers extends React.Component {
     let countChecked = 0;
 
     this.state.deleteRef.forEach(checkbox => {
-        if (checkbox.current.checked){
+        if (checkbox.current!==null && checkbox.current.checked){
           countChecked++;
         }
     });
@@ -765,18 +765,28 @@ export default class Customers extends React.Component {
     }
 
     //Xử lý tự động check all
-    if (countChecked==this.state.customers.length){
-      this.checkAllRef.current.checked = true;
-    }else{
-      this.checkAllRef.current.checked = false;
+    
+    if (this.checkAllRef.current!==null){
+      if (countChecked==this.state.customers.length){
+        this.checkAllRef.current.checked = true;
+      }else{
+        this.checkAllRef.current.checked = false;
+      }
     }
+   
   }
 
   resetCheckboxDelete = () => {
     this.checkAllRef.current.checked = false;
-    this.state.deleteRef.forEach(checkbox => {
-        checkbox.current.checked = false;
-    });
+    if (this.checkAllRef.current.length){
+      this.state.deleteRef.forEach(checkbox => {
+          if (checkbox.current!==null){
+            checkbox.current.checked = false;
+          }
+          
+      });
+    }
+    
     this.handleChangeDelete();
   }
 
