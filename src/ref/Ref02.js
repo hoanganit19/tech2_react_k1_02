@@ -8,6 +8,10 @@ export default class Ref02 extends React.Component{
         }
 
         this.checkAllRef = React.createRef();
+
+        this.checkCount = 0;
+
+        this.buttonRef = React.createRef();
     }
 
     componentDidMount(){
@@ -41,9 +45,54 @@ export default class Ref02 extends React.Component{
 
     handleCheckAll = () => {
         let checkboxStatus = this.checkAllRef.current.checked;
+
+        if (checkboxStatus){
+            this.checkCount = this.state.customers.length;
+        }else{
+            this.checkCount = 0;
+        }
+
+        this.renderCheckCount();
+
         this.checkboxItemRef.forEach(checkItem => {
             checkItem.current.checked = checkboxStatus;
         })
+    }
+
+    handeCheck = (e) => {
+
+        //Áp dụng trong trường hợp bỏ check
+        if (!e.target.checked){
+            this.checkAllRef.current.checked = false;
+            this.checkCount--;
+            this.renderCheckCount();
+            return; //Thoát hàm
+        }
+
+        //Xử lý trong trường hợp checked từng checkbox item
+        let count = 0;
+        let checkStatus = this.checkboxItemRef.every(checkbox => {
+            if (checkbox.current.checked){
+                count++;
+            }
+            return checkbox.current.checked;
+        });
+
+        this.checkCount = count;
+
+        this.renderCheckCount();
+
+        this.checkAllRef.current.checked = checkStatus;
+    }
+
+    renderCheckCount = () => {
+        this.buttonRef.current.children[0].innerText = this.checkCount; 
+        if (this.checkCount>0){
+            this.buttonRef.current.removeAttribute('disabled');
+        }else{
+            this.buttonRef.current.setAttribute('disabled', 'disabled');
+        }
+        
     }
 
     render(){
@@ -55,11 +104,12 @@ export default class Ref02 extends React.Component{
                     this.state.customers.map(customer => {
                         return (
                             <React.Fragment key={customer.id}>
-                            <p><input ref={this.checkboxItemRef[customer.id]} type="checkbox" value={customer.id} /> {customer.name}</p>
+                            <p><input ref={this.checkboxItemRef[customer.id]} type="checkbox" onChange={this.handeCheck} value={customer.id} /> {customer.name}</p>
                             </React.Fragment>
                         );
                     })
                 }
+                <button type="button" ref={this.buttonRef} disabled>Xoá (<span>0</span>)</button>
             </>
         );
     }

@@ -4,7 +4,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+
 import "./Customers.scss";
+
 
 export default class Customers extends React.Component {
   constructor(props) {
@@ -42,6 +46,10 @@ export default class Customers extends React.Component {
     this.deleteCountRef = React.createRef();
 
     this.checkAllRef = React.createRef();
+
+    this.deleteCount = 0;
+
+    this.deleteIds = [];
   }
 
   getFilterQuery = () => {
@@ -149,6 +157,7 @@ export default class Customers extends React.Component {
   };
 
   componentDidMount() {
+    //toast("Wow so easy!");
     this.getUsers();
     this.setMaxPage();
 
@@ -558,7 +567,7 @@ export default class Customers extends React.Component {
               </thead>
               <tbody>{this.customersRender()}</tbody>
             </table>
-            <button type="button" ref={this.deleteButtonRef} className="btn btn-danger disabled">
+            <button type="button" ref={this.deleteButtonRef} className="btn btn-danger disabled" onClick={this.handleDeleteSelection}>
               Xoá đã chọn (<span ref={this.deleteCountRef}>0</span>)
             </button>
             {this.paginateRender()}
@@ -684,6 +693,7 @@ export default class Customers extends React.Component {
   };
 
   handleDeleteSubmit = (id) => {
+
     confirmAlert({
       title: "Bạn có chắc chắn muốn xoá?",
       message: "Nếu xoá bạn sẽ không thể khôi phục",
@@ -750,11 +760,16 @@ export default class Customers extends React.Component {
     
     let countChecked = 0;
 
+    this.deleteIds = []; //reset
+
     this.state.deleteRef.forEach(checkbox => {
         if (checkbox.current!==null && checkbox.current.checked){
           countChecked++;
+          this.deleteIds.push(checkbox.current.value);
         }
     });
+
+    this.deleteCount = countChecked;
 
     this.deleteCountRef.current.innerText = countChecked;
 
@@ -790,10 +805,42 @@ export default class Customers extends React.Component {
     this.handleChangeDelete();
   }
 
+  handleDeleteSelection = () => {
+
+    if (this.deleteCount){
+
+      confirmAlert({
+        title: "Bạn có chắc chắn muốn xoá?",
+        message: "Nếu xoá bạn sẽ không thể khôi phục",
+        buttons: [
+          {
+            label: "Có",
+            onClick: () => {
+                if (this.deleteIds.length){
+                  this.deleteIds.forEach(id => {
+                      this.deleteUser(id);
+                  });
+
+                  this.deleteCountRef.current.innerText = 0;
+                  this.deleteButtonRef.current.classList.add('disabled');
+                }
+            },
+          },
+          {
+            label: "Không",
+            onClick: () => {},
+          },
+        ],
+      });
+    }
+    
+  }
+
   render() {
     return (
       <>
         <div className="container">{this.renderAction()}</div>
+        {/* <ToastContainer /> */}
       </>
     );
   }
